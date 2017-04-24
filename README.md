@@ -9,6 +9,31 @@ The app uses your location so please enable location services. The top 25 coffee
 
 The search bar uses the Google Geolocation API to help you search for coffee in other places. Suppose you are heading on a road trip later today, just search your destination and find what shop you want to hit once you arrive! Make sure to use hipster mode so you choose something local.
 
+## Getting Started:
+
+To run this web application, you can simply download the app from: [https://github.com/skrinik/FEND-Neighborhood-Map](https://github.com/skrinik/FEND-Neighborhood-Map)
+and run it locally. Once the download completes, unzip the files and open your command prompt/terminal (mac). From there, navigate to the directory you just unzipped, and open ```index.html```. The app should run smoothly from there.
+
+**Using localhost:**
+
+Another option is to host the files locally using python's SimpleHTTPServer command. For documentation, please see: [https://docs.python.org/2/library/simplehttpserver.html](https://docs.python.org/2/library/simplehttpserver.html).
+Install the cli for python v2/v3 (for more info on python see: [https://www.python.org/downloads/](https://www.python.org/downloads/)), then simply navigate to the directory yoy want to serve, and call ```python -m SimpleHTTPServer 8000``` (or replace 8000 with whatever port number you wish to use. CAREFUL, be wary of serving over any port, 8000/8080 are most common for local hosting).
+
+#### *tl;dr*
+
+```python -m SimpleHTTPServer 8000```
+
+
+**Using localhost & ngrok**
+
+To host the site temporarily on the web, we can use the above step to host the site locally, then use ngrok to expose the files to the web. Easiest way to use ngrok is to download the module from [https://ngrok.com/download](https://ngrok.com/download), put the module in your local directory, and call ngrok on the port you're serving the files on with your python simple server.
+
+#### *tl;dr*
+
+```python -m SimpleHTTPServer 8000```
+then,
+```ngrok http 8000```
+
 ## Functionality:
 
 All calls to Foursquare & Google are asynchronous requests. I included the sources for solutions I found online for the obstacles I faced.
