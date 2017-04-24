@@ -42,7 +42,7 @@
               </div>
               <hr />
               <div class="button-bar">
-                <button id="findMe" class="btn btn-info" type="button">Find Me</button>
+                <button data-bind="click: function() {deleteMarkers(); findMe()}" class="btn btn-info" type="button">Find Me</button>
                 <div class="dropup">
                   <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Distance:
@@ -72,13 +72,7 @@
     <script src='js/knockout-3.4.2.js'></script>
     <script src='js/app.js'></script>
     <!-- load google maps with jquery to use fail catch method. -->
-    <script>
-    $.getScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyCr4dy4eMeF-wwSDGeeWhbzWlgb9d-hTak&v3&callback=initMap").fail(function(jqxhr, textStatus, error) {
-      var err = textStatus + ", " + error
-      window.alert("Google Maps request failed, please check your location or credentials.")
-      console.log("Request Failed: " + err);
-    });
-    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCr4dy4eMeF-wwSDGeeWhbzWlgb9d-hTak&v3&callback=initMap" onerror="mapsLoadError()"></script>
     <!-- bootstrap js -->
     <script src='js/bootstrap.min.js'></script>
   </body>

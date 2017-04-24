@@ -100,6 +100,10 @@ function initMap() {
   findMe();
 }; // closing initMap() function
 
+function mapsLoadError() {
+  window.alert("Google Maps could not be loaded.");
+}
+
 function findMe() {
   // geolocation to set map center to the device's current location. If failed, alerts user and defaults to LA.
   mapCenterMarker.setVisible(false); // hide marker on initial call while geolocate runs
@@ -365,12 +369,6 @@ function updateShops() {
     "&limit=25" + "&radius=8000";
   createFSQMarkerList(url);
 }
-
-$('#findMe').click(function() { // script for findMe button to set back to 'home'
-  deleteMarkers();
-  findMe();
-  console.log("findMe called");
-});
 
 // subscribe so we can let maps know there was a change once the observable changes.
 vm.userDefLocation.subscribe(function(newLoc) {
