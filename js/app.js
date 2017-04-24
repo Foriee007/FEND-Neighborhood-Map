@@ -4,10 +4,11 @@ var vm = {
   userDefLocation: ko.observable(""), // keeps track of the location entered in the search bar.
   coffeeShops: ko.observableArray([]), // stores markers/info for all coffee shops from foursquare
   hipsterShops: ko.observableArray([]), // stores markers/info for only the shops that make it past the hipster filter
+  tempArray: ko.observableArray([]), // this array is used to hold the original version of coffeeShops when distance filter is used
   hipsterToggle: ko.observable(false), // tracks if hipster mode is on or off; Default: off meaning all shops display.
-  hipsterify() {
-    // toggles hipster mode, removes any instances of known chains with gross coffee.
-    this.hipsterToggle(true); // turns hipster mode on officially
+  distanceCalled: ko.observable(false), // track if the distance filter has been called so it won't be called back to back
+  sortHipsterArray() {
+    // removes any instances of known chains with gross coffee.
     this.hipsterShops(this.coffeeShops().slice()); //copies all objects in the coffeeShops array over to hipsterShops
     // remove instances of the coffee shops that don't belong
     this.hipsterShops.remove(function(shop) {
@@ -26,8 +27,30 @@ var vm = {
       return shop.isChain
     });
   },
+  hipsterify() { // toggles hipster mode and calls a sort of the hipster array
+    this.hipsterToggle(true); // turns hipster mode on officially
+    this.sortHipsterArray();
+  },
   unhipsterify() { //turns hipster mode off
     this.hipsterToggle(false);
+  },
+  walkingDistance() { // filters out any shops over 1 mile away
+    if (this.distanceCalled() === false) { // checks to see if this is a back-to-back call to walkingDistance()
+      this.tempArray(this.coffeeShops().slice()); // copies the original coffeeShops() array and stores it all
+      this.coffeeShops.remove(function(item) { // remove any values with distances over 1610 meters (~1mi)
+        return item.distance > 1610;
+      });
+      this.sortHipsterArray(); // call a sort to hipsterShops now that coffeeShops has been changed
+    }
+    this.distanceCalled(true); // toggle on distanceCalled so this won't run twice in a row
+  },
+  anyDistance() { // resets coffeeShops to show all markers
+    if (this.distanceCalled() === true) { // since walkingDistance is on, let's undo the filter now and reset it:
+      this.coffeeShops(this.tempArray().slice()); // copies the tempArray back over to coffeeShops, restoring it to original
+      this.sortHipsterArray(); // re-sort hipsterShops array now that coffeeShops has changed back to original
+      this.tempArray.removeAll(); // clear tempArray incase we change locations
+      this.distanceCalled(false); //
+    }
   }
 };
 
@@ -43,7 +66,7 @@ ko.bindingHandlers.fadeVisible = {
   update: function(element, valueAccessor) {
     // Whenever the value subsequently changes, slowly fade the element in or out
     var value = valueAccessor();
-    ko.unwrap(value) ? $(element).slideDown(2000) : $(element).fadeOut(1000);
+    ko.unwrap(value) ? $(element).slideDown(1000) : $(element).fadeOut(1000);
   }
 };
 
@@ -52,7 +75,7 @@ ko.applyBindings(vm);
 
 // MAPS
 // create global instances of maps variables:
-var map, currentPos, updatedLoc, userLoc, foursquare, url, marker, bounds;
+var map, currentPos, updatedLoc, userLoc, foursquare, url, marker, mapCenterMarker, bounds;
 
 // foursquare info to be used for url in ajax later on.
 var client_id = 'IECW1ZSMEZ5QD15TXZWC5E1MPEXATEBUHIAEQPO005CZUEDK';
@@ -73,8 +96,13 @@ function initMap() {
     draggable: false, // so we don't accidentally drag away from the current location, especially on mobile.
     scrollwheel: false // no accidental zooms when scrolling.
   });
+  createMapCenterMarker();
+  findMe();
+}; // closing initMap() function
 
+function findMe() {
   // geolocation to set map center to the device's current location. If failed, alerts user and defaults to LA.
+  mapCenterMarker.setVisible(false); // hide marker on initial call while geolocate runs
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
         currentPos = {
@@ -82,6 +110,9 @@ function initMap() {
           lng: position.coords.longitude
         };
         map.setCenter(currentPos); // sets map center to the device location
+        mapCenterMarker.setPosition(currentPos); // set the position of the single marker to avoid duplicates
+        mapCenterMarker.setVisible(true); // make marker visibile
+        vm.distanceCalled(false); // resets the distanceCalled param since all shops are being reloaded
         resetMarkers(); // call stack that deletes all current markers, updates the shops with current map center and fills arrays
       },
       function() {
@@ -89,15 +120,51 @@ function initMap() {
         console.log("Geolocation ran but failed.");
         window.alert("Geolocation failed, so I sent you to LA. Search your location to see results near you!");
         resetMarkers(); // same function as above, except the default location in LA will be used in updateShops function
+        mapCenterMarker.setVisible(true); // make marker visibile
       });
   } else {
     // Browser doesn't support Geolocation
     console.log("Geolocation is not supported in browser so it failed.");
     window.alert("Geolocation is disabled in your browser, so I sent you to LA. Search your location to see results near you!");
     resetMarkers(); // same function as above, except the default location in LA will be used in updateShops function
+    mapCenterMarker.setVisible(true); // make marker visibile
   }
-}; // closing initMap() function
+}
 
+function createMapCenterMarker() { // creates a map center marker to help quanitfy the distance
+  mapCenterMarker = new google.maps.Marker({
+    position: {
+      lat: map.center.lat(),
+      lng: map.center.lng()
+    },
+    title: "You are here.",
+    map: map,
+    visible: false, // hide marker on map load
+    distance: 0,
+    animation: google.maps.Animation.DROP,
+    icon: makeMarkerIcon('9fff82'),
+    id: "Map Center"
+  });
+
+  var contentString = '<div id="content">' +
+    '<p><span id="title">' + mapCenterMarker.title + '</span></p></div>';
+
+  var infowindow = new google.maps.InfoWindow({
+    content: contentString
+  });
+
+  mapCenterMarker.addListener('mouseover', function() {
+    mapCenterMarker.setAnimation(google.maps.Animation.BOUNCE);
+    infowindow.open(map, mapCenterMarker);
+  });
+
+  mapCenterMarker.addListener('mouseout', function() {
+    setTimeout(function() {
+      mapCenterMarker.setAnimation(google.maps.Animation.null)
+    }, 750);
+    infowindow.close();
+  });
+}
 
 function createFSQMarkerList(link) {
   // ajax call to retrieve foursquare data:
@@ -256,7 +323,7 @@ function setAllMarkers() {
 function resetMarkers() {
   deleteMarkers();
   updateShops();
-  setAllMarkers();
+  //setAllMarkers();
 }
 
 // function called when the search bar is used to change location, resets map center using geocoding api
@@ -269,8 +336,10 @@ function changeMapCenter() {
     address: address
   }, function(results, status) {
     if (status == google.maps.GeocoderStatus.OK) {
-      map.setCenter(results[0].geometry.location);
+      newCenter = results[0].geometry.location;
+      map.setCenter(newCenter);
       map.setZoom(12);
+      mapCenterMarker.setPosition(newCenter);
     } else {
       // if error thrown, alerts user
       window.alert("location could not be found, try another one!");
@@ -296,6 +365,12 @@ function updateShops() {
     "&limit=25" + "&radius=8000";
   createFSQMarkerList(url);
 }
+
+$('#findMe').click(function() { // script for findMe button to set back to 'home'
+  deleteMarkers();
+  findMe();
+  console.log("findMe called");
+});
 
 // subscribe so we can let maps know there was a change once the observable changes.
 vm.userDefLocation.subscribe(function(newLoc) {

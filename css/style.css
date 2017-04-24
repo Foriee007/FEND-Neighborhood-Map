@@ -44,12 +44,17 @@ hr {
 
 .list-box {
   padding-right: 10px;
-  height: 65vh;
+  height: 60vh;
   overflow: scroll;
 }
 
-.result-counter {
+.dropup {
+  display: inline-block;
   text-align: center;
+}
+
+ul.dropdown-menu {
+  left: -100px;
 }
 
 .footer-info {
@@ -59,6 +64,11 @@ hr {
 
 p.footer-info {
   margin: 5px auto;
+}
+
+.drop-item {
+  font-size: .75em;
+  font-weight: 400;
 }
 
 .button-bar {

@@ -2,9 +2,6 @@
     FEND Neighborhood Exploration Project
     Find good coffee near you, or anywhere for that matter!
   -->
-
-<!-- Finish the error handling for gmaps api call at bottom  aka mapsLoadError()-->
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -29,7 +26,7 @@
             <div class="input-group">
               <img id="ineedcoffee" src="img/inc.svg" class="img-responsive" onerror="this.src='img/inc.png'">
               <h2 id="search">Search:</h2>
-              <img src="img/thuglifeglasses.png" data-bind="fadeVisible: hipsterToggle" class="thuglyfe-glasses hipster-mode" />
+              <img src="img/thuglifeglasses.png" data-bind="fadeVisible: hipsterToggle()" class="thuglyfe-glasses hipster-mode" />
               <input id="search-bar" class="form-control" type="text" data-bind="value: userDefLocation" placeholder="Zip code or city..." />
               <div class="list-box">
                 <ul data-bind="visible: hipsterToggle, foreach: hipsterShops" class="scroll">
@@ -44,13 +41,25 @@
                 </ul>
               </div>
               <hr />
-              <p data-bind="visible: !hipsterToggle()" class="result-counter">There are <span data-bind="text: coffeeShops().length"></span> results.</p>
-              <p data-bind="visible: hipsterToggle()" class="result-counter">There are <span data-bind="text: hipsterShops().length"></span> results.</p>
+              <div class="button-bar">
+                <button id="findMe" class="btn btn-info" type="button">Find Me</button>
+                <div class="dropup">
+                  <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Distance:
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                    <li><a data-bind="click: function() {clearMarkers(); walkingDistance(); if(hipsterToggle()){setHipsterMarkers();}else{setAllMarkers();}}" class="drop-item" href="#">Walking (< 1mi)</a></li>
+                    <li><a data-bind="click: function() {clearMarkers(); anyDistance(); if(hipsterToggle()){setHipsterMarkers();}else{setAllMarkers();}}" class="drop-item" href="#">Any Distance within 5 miles.</a></li>
+                  </ul>
+                </div>
+              </div>
               <hr />
               <div class="button-bar">
-                <button data-bind="click: function(){hipsterify(); clearMarkers(); setHipsterMarkers()}" class="btn btn-default btn-success" type "button">Hipsterify</button>
-                <button data-bind="click: function(){unhipsterify(); clearMarkers(); setAllMarkers()}" class="btn btn-default btn-danger" type "button">UN-Hipsterify</button>
-              </div>
+                <button data-bind="click: function(){hipsterify(); clearMarkers(); setHipsterMarkers()}" class="btn btn-success" type "button">Hipsterify</button>
+                <button data-bind="click: function(){unhipsterify(); clearMarkers(); setAllMarkers()}" class="btn btn-danger" type "button">UN-Hipsterify</button>
+
+            </div>
             </div>
             <hr />
             <p class="footer-info">Hipster mode gets rid of large chains with lame coffee. Drink local! <br />* Thug glasses will display when in hipster mode. *</p>
@@ -73,5 +82,4 @@
     <!-- bootstrap js -->
     <script src='js/bootstrap.min.js'></script>
   </body>
-
 </html>
