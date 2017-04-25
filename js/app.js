@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 // KNOCKOUT
 // ViewModel
 var vm = {
@@ -12,19 +13,19 @@ var vm = {
     this.hipsterShops(this.coffeeShops().slice()); //copies all objects in the coffeeShops array over to hipsterShops
     // remove instances of the coffee shops that don't belong
     this.hipsterShops.remove(function(shop) {
-      return shop.title.includes("The Coffee Bean")
+      return shop.title.includes("The Coffee Bean");
     });
     this.hipsterShops.remove(function(shop) {
-      return shop.title.includes("Coffee Bean")
+      return shop.title.includes("Coffee Bean");
     });
     this.hipsterShops.remove(function(shop) {
-      return shop.title.includes("Starbuck")
+      return shop.title.includes("Starbuck");
     });
     this.hipsterShops.remove(function(shop) {
-      return shop.title.includes("Peet")
+      return shop.title.includes("Peet");
     });
     this.hipsterShops.remove(function(shop) {
-      return shop.isChain
+      return shop.isChain;
     });
   },
   hipsterify() { // toggles hipster mode and calls a sort of the hipster array
@@ -82,7 +83,81 @@ var client_id = 'IECW1ZSMEZ5QD15TXZWC5E1MPEXATEBUHIAEQPO005CZUEDK';
 var client_secret = 'W1VA2ZRDWKZ3CXPNBEPH2C15XZB3104BF1OHHBWTJ4H5WNSO';
 
 // map styles for the cool greyscale-ish look, found on snazzymaps.com
-var styles=[{stylers:[{saturation:-100},{gamma:1}]},{elementType:"labels.text.stroke",stylers:[{visibility:"off"}]},{featureType:"poi.business",elementType:"labels.text",stylers:[{visibility:"off"}]},{featureType:"poi.business",elementType:"labels.icon",stylers:[{visibility:"off"}]},{featureType:"poi.place_of_worship",elementType:"labels.text",stylers:[{visibility:"off"}]},{featureType:"poi.place_of_worship",elementType:"labels.icon",stylers:[{visibility:"off"}]},{featureType:"road",elementType:"geometry",stylers:[{visibility:"simplified"}]},{featureType:"water",stylers:[{visibility:"on"},{saturation:50},{gamma:0},{hue:"#50a5d1"}]},{featureType:"administrative.neighborhood",elementType:"labels.text.fill",stylers:[{color:"#333333"}]},{featureType:"road.local",elementType:"labels.text",stylers:[{weight:.5},{color:"#333333"}]},{featureType:"transit.station",elementType:"labels.icon",stylers:[{gamma:1},{saturation:50}]}];
+var styles = [{
+  stylers: [{
+    saturation: -100
+  }, {
+    gamma: 1
+  }]
+}, {
+  elementType: "labels.text.stroke",
+  stylers: [{
+    visibility: "off"
+  }]
+}, {
+  featureType: "poi.business",
+  elementType: "labels.text",
+  stylers: [{
+    visibility: "off"
+  }]
+}, {
+  featureType: "poi.business",
+  elementType: "labels.icon",
+  stylers: [{
+    visibility: "off"
+  }]
+}, {
+  featureType: "poi.place_of_worship",
+  elementType: "labels.text",
+  stylers: [{
+    visibility: "off"
+  }]
+}, {
+  featureType: "poi.place_of_worship",
+  elementType: "labels.icon",
+  stylers: [{
+    visibility: "off"
+  }]
+}, {
+  featureType: "road",
+  elementType: "geometry",
+  stylers: [{
+    visibility: "simplified"
+  }]
+}, {
+  featureType: "water",
+  stylers: [{
+    visibility: "on"
+  }, {
+    saturation: 50
+  }, {
+    gamma: 0
+  }, {
+    hue: "#50a5d1"
+  }]
+}, {
+  featureType: "administrative.neighborhood",
+  elementType: "labels.text.fill",
+  stylers: [{
+    color: "#333333"
+  }]
+}, {
+  featureType: "road.local",
+  elementType: "labels.text",
+  stylers: [{
+    weight: 0.5
+  }, {
+    color: "#333333"
+  }]
+}, {
+  featureType: "transit.station",
+  elementType: "labels.icon",
+  stylers: [{
+    gamma: 1
+  }, {
+    saturation: 50
+  }]
+}];
 
 // map initialization:
 function initMap() {
@@ -98,7 +173,7 @@ function initMap() {
   });
   createMapCenterMarker();
   findMe();
-}; // closing initMap() function
+} // closing initMap() function
 
 function mapsLoadError() {
   window.alert("Google Maps could not be loaded.");
@@ -150,8 +225,8 @@ function createMapCenterMarker() { // creates a map center marker to help quanit
     id: "Map Center"
   });
 
-  var contentString = '<div id="content">' +
-    '<p><span id="title">' + mapCenterMarker.title + '</span></p></div>';
+  var contentString = '<div class="content">' +
+    '<p><span class="title">' + mapCenterMarker.title + '</span></p></div>';
 
   var infowindow = new google.maps.InfoWindow({
     content: contentString
@@ -164,7 +239,7 @@ function createMapCenterMarker() { // creates a map center marker to help quanit
 
   mapCenterMarker.addListener('mouseout', function() {
     setTimeout(function() {
-      mapCenterMarker.setAnimation(google.maps.Animation.null)
+      mapCenterMarker.setAnimation(google.maps.Animation.null);
     }, 750);
     infowindow.close();
   });
@@ -207,6 +282,7 @@ function createFSQMarkerList(link) {
         map: map,
         isChain: chain,
         distance: foursquare[i].location.distance,
+        venueId: foursquare[i].id,
         animation: google.maps.Animation.DROP,
         icon: defaultIcon,
         id: i
@@ -224,14 +300,16 @@ function createFSQMarkerList(link) {
           var chainDisplay;
           // checks if the marker is associated with a chain and displays the appropriate response.
           if (marker.isChain) {
-            chainDisplay = '<span class="text-danger">This location is a chain.</span>'
+            chainDisplay = '<span class="text-danger">This location is a chain.</span>';
           } else {
-            chainDisplay = '<span class="text-success">Hipster Approved. #DrinkLocal</span>'
+            chainDisplay = '<span class="text-success">Hipster Approved. #DrinkLocal</span>';
           }
-          var contentString = '<div id="content">' +
-            '<p><span id="title">' + marker.title + '</span>' +
+          var contentString = '<div class="content">' +
+            '<p><span class="title">' + marker.title + '</span>' +
             '<br />' + chainDisplay +
-            '<br />' + 'You are ' + distanceConversion(marker.distance) + ' miles away.' + '</p>' +
+            '<br />' + 'You are ' + distanceConversion(marker.distance) + ' miles away.' +
+            '<br /> <a class="fsq-link" href="http://foursquare.com/v/' + marker.venueId +
+            '" target="_blank">See on Foursquare</a></p>' +
             '</div>';
           largeInfowindow.setContent(contentString);
           largeInfowindow.open(map, marker);
@@ -242,7 +320,7 @@ function createFSQMarkerList(link) {
             marker.setAnimation(null);
             marker.setIcon(defaultIcon);
           }, 1500);
-        }
+        };
       })(marker, i));
 
       // once the marker is created above (with the listener added) push the marker into coffeeShops array
@@ -265,9 +343,9 @@ function createFSQMarkerList(link) {
     } // close loop
   }).fail(function(jqxhr, textStatus, error) {
     var err = textStatus + ", " + error;
-    window.alert("Foursquare request failed, please check your location or credentials.")
+    window.alert("Foursquare request failed, please check your location or credentials.");
     console.log("Request Failed: " + err);
-  });; // close ajax call
+  }); // close ajax call
 } // close createFSQMarkerList() function
 
 // function from the Google Maps API course:
@@ -281,7 +359,7 @@ function makeMarkerIcon(markerColor) {
     new google.maps.Size(21, 34)
   );
   return markerImage;
-};
+}
 
 // converts meters to miles (rounded to tenths), used to display distance away from current location.
 function distanceConversion(meters) {
@@ -348,14 +426,14 @@ function changeMapCenter() {
       // if error thrown, alerts user
       window.alert("location could not be found, try another one!");
     }
-  })
+  });
   // Need to run updateShops() once the map has loaded and the new map center has been established
   // Needed to find when map load has finished, found solution online using the map 'idle' throw.
   // map idle solution found on stack overflow: (http://stackoverflow.com/questions/832692/how-can-i-check-whether-google-maps-is-fully-loaded)
   google.maps.event.addListenerOnce(map, 'idle', function() {
     updateShops();
   });
-};
+}
 
 // updates the url for the foursquare ajax call, calls createFSQMarkerList to retrieve new data
 function updateShops() {

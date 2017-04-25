@@ -1,5 +1,6 @@
 /* Element Styles */
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -37,6 +38,15 @@ hr {
 }
 
 /* Class Styles */
+
+.fsq-logo {
+  width: 150px;
+  position: absolute;
+  bottom: 25px;
+  left: 5px;
+  z-index: 1000;
+  pointer-events: none;
+}
 
 .input-group-btn {
   float: right;
@@ -103,19 +113,19 @@ p.footer-info {
   z-index: 1;
 }
 
-#ineedcoffee {
+.ineedcoffee {
   display: inline;
   max-width: 75px;
   margin: auto 5px;
 }
 
-#search {
+.search {
   display: inline-block;
   margin: auto;
   text-align: center;
 }
 
-#options-box {
+.options-box {
   height: 100vh;
   background-color: #444;
   border: solid 2px #aaa;
@@ -123,7 +133,6 @@ p.footer-info {
   padding: 5px;
   overflow: scroll;
 }
-
 
 /* InfoWindow Styles */
 
@@ -135,16 +144,28 @@ p.footer-info {
   color: red !important;
 }
 
-#content {
+.content {
   text-align: center;
-}
-
-#content > p {
   color: black;
 }
 
-#title {
+div.content > p {
   color: black;
+  margin: 5px auto;
+}
+
+.fsq-link {
+  color: black;
+  font-weight: 400;
+  text-decoration: underline;
+}
+
+.fsq-link:hover {
+  color: #aaa;
+}
+
+.title {
+  color: black !important;
   font-size: 1em;
   font-weight: 600;
 }
@@ -156,7 +177,7 @@ p.footer-info {
     height: 50vh;
   }
 
-  #options-box {
+  .options-box {
     height: 50vh;
   }
 
